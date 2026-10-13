@@ -1,0 +1,328 @@
+doctype html
+html(lang='es')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    title Calendario semanal
+    style.
+      :root {
+        --bg: #f6f7fb;
+        --card: #ffffff;
+        --ink: #1d2433;
+        --muted: #7a8299;
+        --line: #e3e6ef;
+        --accent: #3b5bdb;
+        --accent-soft: #e7ecff;
+        --blocked: #eceef4;
+        --danger: #c92a2a;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+      }
+      .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
+      .top {
+        display: flex; flex-wrap: wrap; gap: 12px;
+        align-items: center; justify-content: space-between; margin-bottom: 16px;
+      }
+      h1 { font-size: 1.5rem; margin: 0; }
+      h2 { font-size: 1.05rem; margin: 0 0 10px; }
+      .nav { display: flex; align-items: center; gap: 8px; }
+      #rango { min-width: 190px; text-align: center; font-weight: 600; }
+      button {
+        font: inherit; border: 1px solid var(--line); background: var(--card);
+        color: var(--ink); border-radius: 8px; padding: 6px 12px; cursor: pointer;
+      }
+      button:hover { border-color: var(--accent); }
+      button.ghost { background: transparent; }
+      button.primario { background: var(--accent); border-color: var(--accent); color: #fff; }
+      button.peligro { color: var(--danger); border-color: var(--danger); }
+      .tabla-scroll {
+        overflow-x: auto; background: var(--card);
+        border: 1px solid var(--line); border-radius: 12px;
+      }
+      table { width: 100%; min-width: 760px; border-collapse: separate; border-spacing: 6px; }
+      th {
+        font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em;
+        color: var(--muted); padding: 6px 4px;
+      }
+      th small { display: block; font-size: 1.1rem; color: var(--ink); letter-spacing: 0; }
+      th.hoy small { color: var(--accent); }
+      td.hora {
+        width: 110px; font-size: 0.8rem; color: var(--muted);
+        white-space: nowrap; text-align: right; padding-right: 6px;
+      }
+      td.celda { padding: 0; }
+      .bloque {
+        width: 100%; height: 56px; border-radius: 8px; padding: 4px 6px;
+        border: 1px solid var(--line); background: var(--card);
+        font-size: 0.78rem; color: var(--muted); overflow: hidden; line-height: 1.25;
+      }
+      .bloque:hover { background: var(--accent-soft); border-color: var(--accent); }
+      .bloque.sel {
+        background: var(--accent); border-color: var(--accent);
+        color: #fff; text-align: left;
+      }
+      .bloque.sel b { display: block; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .bloque.sel span { display: block; opacity: 0.9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .bloque.almuerzo, .bloque.nd {
+        background: var(--blocked); border-style: dashed; cursor: not-allowed;
+      }
+      .bloque.almuerzo:hover, .bloque.nd:hover {
+        background: var(--blocked); border-color: var(--line);
+      }
+      .resumen {
+        margin-top: 20px; background: var(--card);
+        border: 1px solid var(--line); border-radius: 12px; padding: 16px;
+      }
+      #contador {
+        background: var(--accent-soft); color: var(--accent);
+        border-radius: 99px; padding: 1px 9px; font-size: 0.85rem;
+      }
+      #lista { margin: 0 0 12px; padding-left: 18px; }
+      #lista li { margin-bottom: 6px; }
+      #lista small { color: var(--muted); }
+      #lista:empty::before {
+        content: "Aún no has elegido ningún bloque."; color: var(--muted); margin-left: -18px;
+      }
+      dialog {
+        border: 1px solid var(--line); border-radius: 14px; padding: 20px;
+        width: min(420px, 92vw); color: var(--ink);
+      }
+      dialog::backdrop { background: rgba(20, 24, 40, 0.45); }
+      dialog h3 { margin: 0 0 4px; font-size: 1.1rem; }
+      #modal-sub { margin: 0 0 14px; color: var(--muted); font-size: 0.9rem; }
+      label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 12px; }
+      input, textarea {
+        display: block; width: 100%; margin-top: 4px; font: inherit;
+        padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px;
+      }
+      input:focus, textarea:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+      textarea { resize: vertical; min-height: 70px; }
+      label small { display: block; font-weight: 400; color: var(--muted); margin-top: 4px; }
+      .acciones { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
+
+  body
+    main.wrap
+      header.top
+        h1 Lab DAE 
+  
+        .nav
+          button#prev(aria-label='Semana anterior') ←
+          span#rango
+          button#next(aria-label='Semana siguiente') →
+          button#hoy.ghost Hoy
+
+      .tabla-scroll
+        table#calendario(aria-label='Calendario semanal')
+
+      section.resumen
+        h2
+          | Seleccionados 
+          span#contador 0
+        ul#lista
+
+    dialog#modal
+      form#form
+        h3 Datos del bloque
+        p#modal-sub
+        label
+          | Profesor
+          input#profesor(type='text', required, maxlength='80', autocomplete='off')
+        label
+          | Curso
+          input#curso(type='text', required, maxlength='80', autocomplete='off')
+        label
+          | Nota
+          textarea#nota(maxlength='300')
+        label
+          | Clave
+          input#clave(type='password', required, minlength='4', maxlength='40', autocomplete='off')
+          small#clave-ayuda
+        .acciones
+          button#eliminar.peligro(type='button') Eliminar
+          button#cancelar(type='button') Cancelar
+          button.primario(type='submit') Guardar
+
+    script.
+      // Cada fila es un bloque. "dias" indica en qué días existe (0 = lunes ... 5 = sábado).
+      const BLOQUES = [
+        { id: 'b1',  etiqueta: '8:00 – 9:40 am',  dias: [0,1,2,3,4,5] },
+        { id: 'b2',  etiqueta: '9:40 – 11:40 am', dias: [0,1,2,3,4,5] },
+        { id: 'alm', etiqueta: '12:00 – 1:00 pm', dias: [0,1,2,3,4], bloqueado: true },
+        { id: 'b3',  etiqueta: '1:00 – 2:40 pm',  dias: [0,1,2,3,4] },
+        { id: 'b4',  etiqueta: '2:40 – 4:40 pm',  dias: [0,1,2,3,4] },
+        { id: 'b5',  etiqueta: '6:00 – 7:40 pm',  dias: [0,1,2,3,4] },
+        { id: 'b6',  etiqueta: '7:40 – 9:30 pm',  dias: [0,1,2,3,4] },
+      ];
+
+      const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      const API = '/api/reservas';
+
+      function esc(s) {
+        return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      }
+      function lunesDe(fecha) {
+        const d = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+        d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+        return d;
+      }
+      function claveFecha(d) {
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      }
+      function sumarDias(d, n) {
+        const r = new Date(d);
+        r.setDate(r.getDate() + n);
+        return r;
+      }
+      function descripcion(clave) {
+        const [fecha, id] = clave.split('|');
+        const [y, m, d] = fecha.split('-').map(Number);
+        const dt = new Date(y, m - 1, d);
+        const b = BLOQUES.find(x => x.id === id);
+        return `${DIAS[(dt.getDay() + 6) % 7]} ${d} ${MESES[m - 1]} · ${b.etiqueta}`;
+      }
+
+      // reservas: clave "YYYY-MM-DD|bloque" -> { profesor, curso, nota }
+      let inicioSemana = lunesDe(new Date());
+      let reservas = {};
+      let claveActual = null;
+
+      async function cargar() {
+        try {
+          const r = await fetch(API);
+          if (!r.ok) throw new Error('Error ' + r.status);
+          reservas = await r.json();
+        } catch (e) {
+          alert('No se pudieron cargar los bloques guardados.');
+        }
+      }
+
+      const tabla = document.getElementById('calendario');
+      const rango = document.getElementById('rango');
+      const lista = document.getElementById('lista');
+      const contador = document.getElementById('contador');
+      const modal = document.getElementById('modal');
+      const form = document.getElementById('form');
+
+      function render() {
+        const hoy = claveFecha(new Date());
+        const fechas = DIAS.map((_, i) => sumarDias(inicioSemana, i));
+        const ini = fechas[0], fin = fechas[5];
+        rango.textContent = `${ini.getDate()} ${MESES[ini.getMonth()]} – ${fin.getDate()} ${MESES[fin.getMonth()]} ${fin.getFullYear()}`;
+
+        let html = '<thead><tr><th></th>';
+        fechas.forEach((f, i) => {
+          const esHoy = claveFecha(f) === hoy ? ' class="hoy"' : '';
+          html += `<th${esHoy}>${DIAS[i]}<small>${f.getDate()}</small></th>`;
+        });
+        html += '</tr></thead><tbody>';
+
+        BLOQUES.forEach(b => {
+          html += `<tr><td class="hora">${b.etiqueta}</td>`;
+          fechas.forEach((f, i) => {
+            const clave = `${claveFecha(f)}|${b.id}`;
+            if (!b.dias.includes(i)) {
+              html += `<td class="celda"><button class="bloque nd" disabled aria-label="No disponible"></button></td>`;
+            } else if (b.bloqueado) {
+              html += `<td class="celda"><button class="bloque almuerzo" disabled>Almuerzo</button></td>`;
+            } else {
+              const r = reservas[clave];
+              if (r) {
+                html += `<td class="celda"><button class="bloque sel" data-clave="${clave}" title="${esc(r.curso)} · ${esc(r.profesor)}"><b>${esc(r.curso)}</b><span>${esc(r.profesor)}</span></button></td>`;
+              } else {
+                html += `<td class="celda"><button class="bloque" data-clave="${clave}" aria-label="Elegir bloque"></button></td>`;
+              }
+            }
+          });
+          html += '</tr>';
+        });
+        html += '</tbody>';
+        tabla.innerHTML = html;
+        renderResumen();
+      }
+
+      function renderResumen() {
+        const claves = Object.keys(reservas).sort();
+        contador.textContent = claves.length;
+        lista.innerHTML = claves.map(clave => {
+          const r = reservas[clave];
+          const nota = r.nota ? `<br><small>Nota: ${esc(r.nota)}</small>` : '';
+          return `<li><strong>${esc(r.curso)}</strong> — ${esc(r.profesor)}<br><small>${descripcion(clave)}</small>${nota}</li>`;
+        }).join('');
+      }
+
+      function abrirModal(clave) {
+        claveActual = clave;
+        const r = reservas[clave] || { profesor: '', curso: '', nota: '' };
+        document.getElementById('modal-sub').textContent = descripcion(clave);
+        document.getElementById('profesor').value = r.profesor;
+        document.getElementById('curso').value = r.curso;
+        document.getElementById('nota').value = r.nota || '';
+        document.getElementById('clave').value = '';
+        document.getElementById('clave-ayuda').textContent = reservas[clave]
+          ? 'Escribe la clave de este bloque para guardar cambios o eliminarlo.'
+          : 'Inventa una clave de al menos 4 caracteres. La necesitarás para editar o eliminar este bloque.';
+        document.getElementById('eliminar').style.display = reservas[clave] ? '' : 'none';
+        modal.showModal();
+        document.getElementById('profesor').focus();
+      }
+
+      tabla.addEventListener('click', e => {
+        const btn = e.target.closest('button[data-clave]');
+        if (btn) abrirModal(btn.dataset.clave);
+      });
+
+      form.addEventListener('submit', async e => {
+        e.preventDefault();
+        const datos = {
+          profesor: document.getElementById('profesor').value.trim(),
+          curso: document.getElementById('curso').value.trim(),
+          nota: document.getElementById('nota').value.trim(),
+          clave: document.getElementById('clave').value,
+        };
+        try {
+          const r = await fetch(`${API}/${encodeURIComponent(claveActual)}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos),
+          });
+          if (!r.ok) throw new Error((await r.json()).error || 'Error ' + r.status);
+          reservas[claveActual] = await r.json();
+          modal.close();
+          render();
+        } catch (err) {
+          alert('No se pudo guardar: ' + err.message);
+        }
+      });
+
+      document.getElementById('cancelar').onclick = () => modal.close();
+      document.getElementById('eliminar').onclick = async () => {
+        try {
+          const r = await fetch(`${API}/${encodeURIComponent(claveActual)}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ clave: document.getElementById('clave').value }),
+          });
+          if (!r.ok) {
+            let msg = 'Error ' + r.status;
+            try { msg = (await r.json()).error || msg; } catch (e) {}
+            throw new Error(msg);
+          }
+          delete reservas[claveActual];
+          modal.close();
+          render();
+        } catch (err) {
+          alert('No se pudo eliminar: ' + err.message);
+        }
+      };
+
+      document.getElementById('prev').onclick = () => { inicioSemana = sumarDias(inicioSemana, -7); render(); };
+      document.getElementById('next').onclick = () => { inicioSemana = sumarDias(inicioSemana, 7); render(); };
+      document.getElementById('hoy').onclick = () => { inicioSemana = lunesDe(new Date()); render(); };
+      render();
+      cargar().then(render);
