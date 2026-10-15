@@ -1,4 +1,5 @@
-require('dotenv').config();
+// Ruta explícita al .env: en IIS el directorio de trabajo puede no ser el de la app
+require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 
 var createError = require('http-errors');
 var express = require('express');
