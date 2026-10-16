@@ -1,4 +1,11 @@
 {
-  "reservas": {},
+  "reservas": {
+    "2026-10-15|b4": {
+      "profesor": "Prueba",
+      "curso": "Prueba",
+      "nota": "Prueba",
+      "claveHash": "9c0e36b1634aa591c7fa0f95c55b2cf6:f0333b472d20cc51ff558168d89acf2aa985984ec6871585e781ca501c84ac45"
+    }
+  },
   "enviadas": []
 }

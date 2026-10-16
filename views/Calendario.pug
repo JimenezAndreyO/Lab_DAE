@@ -103,13 +103,15 @@ html(lang='es')
       input:focus, textarea:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
       textarea { resize: vertical; min-height: 70px; }
       label small { display: block; font-weight: 400; color: var(--muted); margin-top: 4px; }
+      .bloque.pasado { cursor: not-allowed; opacity: 0.55; background: var(--blocked); }
+      .bloque.pasado:hover { background: var(--blocked); border-color: var(--line); }
+      .bloque.sel.pasado, .bloque.sel.pasado:hover { background: var(--accent); border-color: var(--accent); }
       .acciones { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
 
   body
     main.wrap
       header.top
-        h1 Lab DAE 
-  
+        h1 Elige tus bloques
         .nav
           button#prev(aria-label='Semana anterior') ←
           span#rango
@@ -138,7 +140,7 @@ html(lang='es')
         label
           | Nota
           textarea#nota(maxlength='300')
-        label
+        label#clave-campo
           | Clave
           input#clave(type='password', required, minlength='4', maxlength='40', autocomplete='off')
           small#clave-ayuda
@@ -162,6 +164,8 @@ html(lang='es')
       const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
       const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
       const API = '/api/reservas';
+      // Hora a la que termina cada bloque (24 h); un bloque terminado queda en solo lectura
+      const FIN_BLOQUE = { b1: '09:40', b2: '11:40', b3: '14:40', b4: '16:40', b5: '19:40', b6: '21:30' };
 
       function esc(s) {
         return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -192,7 +196,17 @@ html(lang='es')
       let reservas = {};
       let claveActual = null;
 
+      // Muestra u oculta el campo de clave según lo que indique el servidor
+      function configurarClaves(activas) {
+        document.getElementById('clave-campo').style.display = activas ? '' : 'none';
+        document.getElementById('clave').required = activas;
+      }
+
       async function cargar() {
+        try {
+          const c = await (await fetch(`${API}/config`)).json();
+          configurarClaves(c.claves);
+        } catch (e) { /* si falla, se deja el campo visible */ }
         try {
           const r = await fetch(API);
           if (!r.ok) throw new Error('Error ' + r.status);
@@ -210,7 +224,9 @@ html(lang='es')
       const form = document.getElementById('form');
 
       function render() {
-        const hoy = claveFecha(new Date());
+        // "Hoy" siempre en hora de Costa Rica (formato YYYY-MM-DD)
+        const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Costa_Rica' });
+        const ahora = new Date().toLocaleTimeString('en-GB', { timeZone: 'America/Costa_Rica', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
         const fechas = DIAS.map((_, i) => sumarDias(inicioSemana, i));
         const ini = fechas[0], fin = fechas[5];
         rango.textContent = `${ini.getDate()} ${MESES[ini.getMonth()]} – ${fin.getDate()} ${MESES[fin.getMonth()]} ${fin.getFullYear()}`;
@@ -232,10 +248,13 @@ html(lang='es')
               html += `<td class="celda"><button class="bloque almuerzo" disabled>Almuerzo</button></td>`;
             } else {
               const r = reservas[clave];
+              const fechaStr = claveFecha(f);
+              // Pasado = día anterior a hoy, o bloque de hoy que ya terminó (solo lectura)
+              const pasado = fechaStr < hoy || (fechaStr === hoy && FIN_BLOQUE[b.id] <= ahora);
               if (r) {
-                html += `<td class="celda"><button class="bloque sel" data-clave="${clave}" title="${esc(r.curso)} · ${esc(r.profesor)}"><b>${esc(r.curso)}</b><span>${esc(r.profesor)}</span></button></td>`;
+                html += `<td class="celda"><button class="bloque sel${pasado ? ' pasado' : ''}"${pasado ? ' disabled' : ` data-clave="${clave}"`} title="${esc(r.curso)} · ${esc(r.profesor)}"><b>${esc(r.curso)}</b><span>${esc(r.profesor)}</span></button></td>`;
               } else {
-                html += `<td class="celda"><button class="bloque" data-clave="${clave}" aria-label="Elegir bloque"></button></td>`;
+                html += `<td class="celda"><button class="bloque${pasado ? ' pasado' : ''}"${pasado ? ' disabled aria-label="Día pasado"' : ` data-clave="${clave}" aria-label="Elegir bloque"`}></button></td>`;
               }
             }
           });
@@ -326,3 +345,5 @@ html(lang='es')
       document.getElementById('hoy').onclick = () => { inicioSemana = lunesDe(new Date()); render(); };
       render();
       cargar().then(render);
+      // Actualiza el calendario cada minuto para que los bloques se bloqueen solos al terminar
+      setInterval(render, 60 * 1000);

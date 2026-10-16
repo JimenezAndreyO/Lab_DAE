@@ -26,6 +26,23 @@ function limpiar(valor, max) {
   return String(valor ?? '').trim().slice(0, max);
 }
 
+// ---------- Bloques pasados (bloqueados) ----------
+// Hora a la que termina cada bloque (24 h, hora de Costa Rica)
+const FIN_BLOQUE = { b1: '09:40', b2: '11:40', b3: '14:40', b4: '16:40', b5: '19:40', b6: '21:30' };
+
+const MENSAJE_PASADO = 'No se pueden agregar, editar ni eliminar bloques que ya pasaron.';
+
+// Un bloque ya pasó si su día es anterior a hoy, o si es hoy y ya terminó.
+// Hora de Costa Rica = UTC-6 (sin horario de verano).
+function esBloquePasado(clave) {
+  const [fecha, id] = String(clave).split('|');
+  const ahora = new Date(Date.now() - 6 * 3600 * 1000).toISOString(); // "YYYY-MM-DDTHH:MM:..."
+  const hoy = ahora.slice(0, 10);
+  const hora = ahora.slice(11, 16);
+  if (fecha < hoy) return true;
+  return fecha === hoy && Boolean(FIN_BLOQUE[id]) && FIN_BLOQUE[id] <= hora;
+}
+
 // ---------- Claves (se guardan cifradas, nunca en texto plano) ----------
 function hacerHash(clave) {
   const salt = crypto.randomBytes(16).toString('hex');
@@ -109,6 +126,7 @@ router.get('/', (req, res) => {
 router.put('/:clave', (req, res) => {
   const clave = req.params.clave;
   if (!claveValida(clave)) return res.status(400).json({ error: 'Bloque inválido' });
+  if (esBloquePasado(clave)) return res.status(403).json({ error: MENSAJE_PASADO });
 
   const body = req.body || {};
   const profesor = limpiar(body.profesor, 80);
@@ -138,6 +156,8 @@ router.put('/:clave', (req, res) => {
 
 // Eliminar un bloque (requiere la clave en el cuerpo: { clave })
 router.delete('/:clave', (req, res) => {
+  if (esBloquePasado(req.params.clave)) return res.status(403).json({ error: MENSAJE_PASADO });
+
   const data = almacen.leer();
   if (!autorizar(req, res, data.reservas[req.params.clave])) return;
 

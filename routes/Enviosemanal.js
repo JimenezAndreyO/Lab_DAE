@@ -5,8 +5,6 @@ const almacen = require('./Almacen');
 const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 
-// La semana se considera terminada el sábado a las 12:00 pm (hora de Costa Rica, UTC-6),
-// porque el último bloque del sábado termina a las 11:40 am.
 const HORA_FIN_SEMANA = '12:00:00-06:00';
 
 let enviando = false;
@@ -111,9 +109,13 @@ async function revisar() {
         html: correo.html,
       });
 
+      // El correo ya salió: se borran los bloques de esa semana para no gastar espacio.
+      // (Si el envío falla, se salta al catch de abajo y los datos se conservan.)
+      for (const clave of claves) delete data.reservas[clave];
       data.enviadas.push(lunesStr);
+      data.enviadas = data.enviadas.slice(-12); // solo se recuerdan las últimas semanas enviadas
       almacen.escribir(data);
-      console.log(`Correo semanal enviado (${lunesStr})`);
+      console.log(`Correo semanal enviado y datos de la semana borrados (${lunesStr})`);
     }
   } catch (err) {
     console.error('Error en el envío semanal:', err.message);
