@@ -7,6 +7,7 @@ router.use(express.json());
 
 const CLAVE_BLOQUE = /^(\d{4})-(\d{2})-(\d{2})\|(b[1-6])$/;
 const MIN_CLAVE = 4;
+const MAX_DIAS_SERIE = 182; // máximo 26 semanas de repetición
 
 // Interruptor de claves: false = cualquiera puede editar/eliminar (modo desarrollo),
 // true = hace falta la clave del bloque. Cámbialo y reinicia el servidor.
@@ -26,6 +27,19 @@ function limpiar(valor, max) {
   return String(valor ?? '').trim().slice(0, max);
 }
 
+// ---------- Fechas ----------
+function fechaIsoValida(s) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const dt = new Date(`${s}T00:00:00Z`);
+  return !isNaN(dt) && dt.toISOString().slice(0, 10) === s;
+}
+
+// Suma n días a "YYYY-MM-DD" y devuelve otra fecha "YYYY-MM-DD"
+function sumarDiasStr(fecha, n) {
+  const [y, m, d] = fecha.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
+}
+
 // ---------- Bloques pasados (bloqueados) ----------
 // Hora a la que termina cada bloque (24 h, hora de Costa Rica)
 const FIN_BLOQUE = { b1: '09:40', b2: '11:40', b3: '14:40', b4: '16:40', b5: '19:40', b6: '21:30' };
@@ -41,6 +55,15 @@ function esBloquePasado(clave) {
   const hora = ahora.slice(11, 16);
   if (fecha < hoy) return true;
   return fecha === hoy && Boolean(FIN_BLOQUE[id]) && FIN_BLOQUE[id] <= hora;
+}
+
+// ---------- Series (bloques que se repiten cada semana) ----------
+// Bloques de una serie desde una fecha en adelante (sin contar los que ya pasaron)
+function clavesDeSerie(data, serie, desdeClave) {
+  const desde = desdeClave.slice(0, 10);
+  return Object.keys(data.reservas).filter(
+    k => data.reservas[k].serie === serie && k.slice(0, 10) >= desde && !esBloquePasado(k)
+  );
 }
 
 // ---------- Claves (se guardan cifradas, nunca en texto plano) ----------
@@ -103,10 +126,10 @@ function autorizar(req, res, reserva) {
   return false;
 }
 
-// Nunca se envían claves ni IP al navegador
+// Nunca se envían claves, IP ni el id interno de la serie al navegador
 function publica(reserva) {
-  const { claveHash, ip, ...resto } = reserva;
-  return resto;
+  const { claveHash, ip, serie, ...resto } = reserva;
+  return { ...resto, enSerie: Boolean(serie) };
 }
 
 // ---------- Rutas ----------
@@ -122,7 +145,9 @@ router.get('/', (req, res) => {
   res.json(salida);
 });
 
-// Crear o editar un bloque
+// Crear o editar un bloque.
+// - Nuevo: con "repetirHasta" (YYYY-MM-DD) se reserva el mismo horario cada semana hasta esa fecha.
+// - Existente: con "aplicarSerie" se edita esta semana y todas las siguientes de su serie.
 router.put('/:clave', (req, res) => {
   const clave = req.params.clave;
   if (!claveValida(clave)) return res.status(400).json({ error: 'Bloque inválido' });
@@ -149,21 +174,62 @@ router.put('/:clave', (req, res) => {
     claveHash = hacerHash(nueva);
   }
 
-  data.reservas[clave] = { profesor, curso, nota, claveHash };
+  // --- Editar un bloque que ya existe ---
+  if (existente) {
+    const objetivos = body.aplicarSerie && existente.serie
+      ? clavesDeSerie(data, existente.serie, clave)
+      : [clave];
+    for (const k of objetivos) {
+      data.reservas[k] = { ...data.reservas[k], profesor, curso, nota, claveHash };
+    }
+    almacen.escribir(data);
+    return res.json({ ...publica(data.reservas[clave]), actualizados: objetivos.length });
+  }
+
+  // --- Crear un bloque nuevo (con repetición semanal opcional) ---
+  const [fecha, id] = clave.split('|');
+  const claves = [clave];
+  const hasta = limpiar(body.repetirHasta, 10);
+  if (hasta) {
+    if (!fechaIsoValida(hasta)) return res.status(400).json({ error: 'La fecha final no es válida' });
+    if (hasta <= fecha) return res.status(400).json({ error: 'La fecha final debe ser posterior al día elegido' });
+    if (hasta > sumarDiasStr(fecha, MAX_DIAS_SERIE)) {
+      return res.status(400).json({ error: 'Se puede repetir un máximo de 26 semanas' });
+    }
+    for (let f = sumarDiasStr(fecha, 7); f <= hasta; f = sumarDiasStr(f, 7)) {
+      claves.push(`${f}|${id}`);
+    }
+  }
+
+  const serie = claves.length > 1 ? crypto.randomBytes(4).toString('hex') : undefined;
+  const omitidos = [];
+  let creados = 0;
+  for (const k of claves) {
+    if (data.reservas[k]) { omitidos.push(k.slice(0, 10)); continue; } // ya ocupado: se respeta
+    data.reservas[k] = { profesor, curso, nota, claveHash, ...(serie ? { serie } : {}) };
+    creados++;
+  }
+
   almacen.escribir(data);
-  res.json(publica(data.reservas[clave]));
+  res.json({ ...publica(data.reservas[clave]), creados, omitidos });
 });
 
-// Eliminar un bloque (requiere la clave en el cuerpo: { clave })
+// Eliminar un bloque (requiere la clave en el cuerpo: { clave, aplicarSerie })
 router.delete('/:clave', (req, res) => {
-  if (esBloquePasado(req.params.clave)) return res.status(403).json({ error: MENSAJE_PASADO });
+  const clave = req.params.clave;
+  if (esBloquePasado(clave)) return res.status(403).json({ error: MENSAJE_PASADO });
 
   const data = almacen.leer();
-  if (!autorizar(req, res, data.reservas[req.params.clave])) return;
+  const existente = data.reservas[clave];
+  if (!autorizar(req, res, existente)) return;
 
-  delete data.reservas[req.params.clave];
+  const objetivos = existente && existente.serie && (req.body || {}).aplicarSerie
+    ? clavesDeSerie(data, existente.serie, clave)
+    : [clave];
+  for (const k of objetivos) delete data.reservas[k];
+
   almacen.escribir(data);
-  res.json({ ok: true });
+  res.json({ ok: true, eliminados: objetivos.length });
 });
 
 module.exports = router;

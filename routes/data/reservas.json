@@ -1,11 +1,355 @@
 {
   "reservas": {
-    "2026-10-15|b4": {
-      "profesor": "Prueba",
-      "curso": "Prueba",
-      "nota": "Prueba",
-      "claveHash": "9c0e36b1634aa591c7fa0f95c55b2cf6:f0333b472d20cc51ff558168d89acf2aa985984ec6871585e781ca501c84ac45"
+    "2026-10-19|b3": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 1",
+      "nota": "27 ESTUDIANTES",
+      "claveHash": "20eff03e43540c0578d9848d28f8e4a7:dfaab68161765d5b773c4cbffa0da62d4f9dc1e842425f4b688bfb2e828ae1dd",
+      "serie": "98dabb90"
+    },
+    "2026-10-26|b3": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 1",
+      "nota": "27 ESTUDIANTES",
+      "claveHash": "20eff03e43540c0578d9848d28f8e4a7:dfaab68161765d5b773c4cbffa0da62d4f9dc1e842425f4b688bfb2e828ae1dd",
+      "serie": "98dabb90"
+    },
+    "2026-11-02|b3": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 1",
+      "nota": "27 ESTUDIANTES",
+      "claveHash": "20eff03e43540c0578d9848d28f8e4a7:dfaab68161765d5b773c4cbffa0da62d4f9dc1e842425f4b688bfb2e828ae1dd",
+      "serie": "98dabb90"
+    },
+    "2026-11-09|b3": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 1",
+      "nota": "27 ESTUDIANTES",
+      "claveHash": "20eff03e43540c0578d9848d28f8e4a7:dfaab68161765d5b773c4cbffa0da62d4f9dc1e842425f4b688bfb2e828ae1dd",
+      "serie": "98dabb90"
+    },
+    "2026-11-16|b3": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 1",
+      "nota": "27 ESTUDIANTES",
+      "claveHash": "20eff03e43540c0578d9848d28f8e4a7:dfaab68161765d5b773c4cbffa0da62d4f9dc1e842425f4b688bfb2e828ae1dd",
+      "serie": "98dabb90"
+    },
+    "2026-11-23|b3": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 1",
+      "nota": "27 ESTUDIANTES",
+      "claveHash": "20eff03e43540c0578d9848d28f8e4a7:dfaab68161765d5b773c4cbffa0da62d4f9dc1e842425f4b688bfb2e828ae1dd",
+      "serie": "98dabb90"
+    },
+    "2026-11-30|b3": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 1",
+      "nota": "27 ESTUDIANTES",
+      "claveHash": "20eff03e43540c0578d9848d28f8e4a7:dfaab68161765d5b773c4cbffa0da62d4f9dc1e842425f4b688bfb2e828ae1dd",
+      "serie": "98dabb90"
+    },
+    "2026-12-07|b3": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 1",
+      "nota": "27 ESTUDIANTES",
+      "claveHash": "20eff03e43540c0578d9848d28f8e4a7:dfaab68161765d5b773c4cbffa0da62d4f9dc1e842425f4b688bfb2e828ae1dd",
+      "serie": "98dabb90"
+    },
+    "2026-10-19|b4": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 1",
+      "nota": "27 estudiantes",
+      "claveHash": "0216fea958fd437bf81b23726ea6ff6f:659c7ebced8e3d5fc28297f0041dbdf7a27516a68a0cbe3bb7311015efe25f2e",
+      "serie": "dede14f9"
+    },
+    "2026-10-26|b4": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 1",
+      "nota": "27 estudiantes",
+      "claveHash": "0216fea958fd437bf81b23726ea6ff6f:659c7ebced8e3d5fc28297f0041dbdf7a27516a68a0cbe3bb7311015efe25f2e",
+      "serie": "dede14f9"
+    },
+    "2026-11-02|b4": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 1",
+      "nota": "27 estudiantes",
+      "claveHash": "0216fea958fd437bf81b23726ea6ff6f:659c7ebced8e3d5fc28297f0041dbdf7a27516a68a0cbe3bb7311015efe25f2e",
+      "serie": "dede14f9"
+    },
+    "2026-11-09|b4": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 1",
+      "nota": "27 estudiantes",
+      "claveHash": "0216fea958fd437bf81b23726ea6ff6f:659c7ebced8e3d5fc28297f0041dbdf7a27516a68a0cbe3bb7311015efe25f2e",
+      "serie": "dede14f9"
+    },
+    "2026-11-16|b4": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 1",
+      "nota": "27 estudiantes",
+      "claveHash": "0216fea958fd437bf81b23726ea6ff6f:659c7ebced8e3d5fc28297f0041dbdf7a27516a68a0cbe3bb7311015efe25f2e",
+      "serie": "dede14f9"
+    },
+    "2026-11-23|b4": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 1",
+      "nota": "27 estudiantes",
+      "claveHash": "0216fea958fd437bf81b23726ea6ff6f:659c7ebced8e3d5fc28297f0041dbdf7a27516a68a0cbe3bb7311015efe25f2e",
+      "serie": "dede14f9"
+    },
+    "2026-11-30|b4": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 1",
+      "nota": "27 estudiantes",
+      "claveHash": "0216fea958fd437bf81b23726ea6ff6f:659c7ebced8e3d5fc28297f0041dbdf7a27516a68a0cbe3bb7311015efe25f2e",
+      "serie": "dede14f9"
+    },
+    "2026-12-07|b4": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 1",
+      "nota": "27 estudiantes",
+      "claveHash": "0216fea958fd437bf81b23726ea6ff6f:659c7ebced8e3d5fc28297f0041dbdf7a27516a68a0cbe3bb7311015efe25f2e",
+      "serie": "dede14f9"
+    },
+    "2026-10-22|b1": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 2",
+      "nota": "32 Estudiantes",
+      "claveHash": "dbba93602584e0c7e7c13ae99686eb8a:272402dccc299868639b7e9885ec1c1a2974b12a4f29d91d7f1e67350ff0d35e",
+      "serie": "e53ee3e4"
+    },
+    "2026-10-29|b1": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 2",
+      "nota": "32 Estudiantes",
+      "claveHash": "dbba93602584e0c7e7c13ae99686eb8a:272402dccc299868639b7e9885ec1c1a2974b12a4f29d91d7f1e67350ff0d35e",
+      "serie": "e53ee3e4"
+    },
+    "2026-11-05|b1": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 2",
+      "nota": "32 Estudiantes",
+      "claveHash": "dbba93602584e0c7e7c13ae99686eb8a:272402dccc299868639b7e9885ec1c1a2974b12a4f29d91d7f1e67350ff0d35e",
+      "serie": "e53ee3e4"
+    },
+    "2026-11-12|b1": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 2",
+      "nota": "32 Estudiantes",
+      "claveHash": "dbba93602584e0c7e7c13ae99686eb8a:272402dccc299868639b7e9885ec1c1a2974b12a4f29d91d7f1e67350ff0d35e",
+      "serie": "e53ee3e4"
+    },
+    "2026-11-19|b1": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 2",
+      "nota": "32 Estudiantes",
+      "claveHash": "dbba93602584e0c7e7c13ae99686eb8a:272402dccc299868639b7e9885ec1c1a2974b12a4f29d91d7f1e67350ff0d35e",
+      "serie": "e53ee3e4"
+    },
+    "2026-11-26|b1": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 2",
+      "nota": "32 Estudiantes",
+      "claveHash": "dbba93602584e0c7e7c13ae99686eb8a:272402dccc299868639b7e9885ec1c1a2974b12a4f29d91d7f1e67350ff0d35e",
+      "serie": "e53ee3e4"
+    },
+    "2026-12-03|b1": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 2",
+      "nota": "32 Estudiantes",
+      "claveHash": "dbba93602584e0c7e7c13ae99686eb8a:272402dccc299868639b7e9885ec1c1a2974b12a4f29d91d7f1e67350ff0d35e",
+      "serie": "e53ee3e4"
+    },
+    "2026-12-10|b1": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 2",
+      "nota": "32 Estudiantes",
+      "claveHash": "dbba93602584e0c7e7c13ae99686eb8a:272402dccc299868639b7e9885ec1c1a2974b12a4f29d91d7f1e67350ff0d35e",
+      "serie": "e53ee3e4"
+    },
+    "2026-10-22|b2": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 2",
+      "nota": "32 Estudiantes",
+      "claveHash": "df120df66c84b9e5bb2db189d436b283:b6906f83f43aac5fe229d11eecdaab6a294350dd10217a29aac865f9abf6967c",
+      "serie": "2567e84c"
+    },
+    "2026-10-29|b2": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 2",
+      "nota": "32 Estudiantes",
+      "claveHash": "df120df66c84b9e5bb2db189d436b283:b6906f83f43aac5fe229d11eecdaab6a294350dd10217a29aac865f9abf6967c",
+      "serie": "2567e84c"
+    },
+    "2026-11-05|b2": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 2",
+      "nota": "32 Estudiantes",
+      "claveHash": "df120df66c84b9e5bb2db189d436b283:b6906f83f43aac5fe229d11eecdaab6a294350dd10217a29aac865f9abf6967c",
+      "serie": "2567e84c"
+    },
+    "2026-11-12|b2": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 2",
+      "nota": "32 Estudiantes",
+      "claveHash": "df120df66c84b9e5bb2db189d436b283:b6906f83f43aac5fe229d11eecdaab6a294350dd10217a29aac865f9abf6967c",
+      "serie": "2567e84c"
+    },
+    "2026-11-19|b2": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 2",
+      "nota": "32 Estudiantes",
+      "claveHash": "df120df66c84b9e5bb2db189d436b283:b6906f83f43aac5fe229d11eecdaab6a294350dd10217a29aac865f9abf6967c",
+      "serie": "2567e84c"
+    },
+    "2026-11-26|b2": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 2",
+      "nota": "32 Estudiantes",
+      "claveHash": "df120df66c84b9e5bb2db189d436b283:b6906f83f43aac5fe229d11eecdaab6a294350dd10217a29aac865f9abf6967c",
+      "serie": "2567e84c"
+    },
+    "2026-12-03|b2": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 2",
+      "nota": "32 Estudiantes",
+      "claveHash": "df120df66c84b9e5bb2db189d436b283:b6906f83f43aac5fe229d11eecdaab6a294350dd10217a29aac865f9abf6967c",
+      "serie": "2567e84c"
+    },
+    "2026-12-10|b2": {
+      "profesor": "Mercedes",
+      "curso": "Finanzas 2",
+      "nota": "32 Estudiantes",
+      "claveHash": "df120df66c84b9e5bb2db189d436b283:b6906f83f43aac5fe229d11eecdaab6a294350dd10217a29aac865f9abf6967c",
+      "serie": "2567e84c"
+    },
+    "2026-10-19|b5": {
+      "profesor": "Andres Aguirre",
+      "curso": "Matematica Financiera",
+      "nota": "Necesidad de lab",
+      "claveHash": "59db281a756fb7684f5ffb6c0e0d5777:a81a849f526e85395fc5d932c9a10f03c910169cf6aab3bb4bf3e375b7f15885"
+    },
+    "2026-10-19|b6": {
+      "profesor": "Andres Aguirre",
+      "curso": "Matematica Financiera",
+      "nota": "Se necesita lab",
+      "claveHash": "3167b752df3fd086584b23ddad78f40b:9aa48a2025c783464da5240a3a706f3c8f954d5dad46152f9cb297400fae724c"
+    },
+    "2026-10-21|b3": {
+      "profesor": "Julio Pereira",
+      "curso": "Contabilidad Avanzada",
+      "nota": "26 Estudiantes",
+      "claveHash": "2f6fc2b526c97f3fbbbffafb801eecc6:792435b59255aaa59eb52c4790a48cd74c1fd88b4bb0be063c529dca911f2291",
+      "serie": "6f4f008e"
+    },
+    "2026-10-28|b3": {
+      "profesor": "Julio Pereira",
+      "curso": "Contabilidad Avanzada",
+      "nota": "26 Estudiantes",
+      "claveHash": "2f6fc2b526c97f3fbbbffafb801eecc6:792435b59255aaa59eb52c4790a48cd74c1fd88b4bb0be063c529dca911f2291",
+      "serie": "6f4f008e"
+    },
+    "2026-11-04|b3": {
+      "profesor": "Julio Pereira",
+      "curso": "Contabilidad Avanzada",
+      "nota": "26 Estudiantes",
+      "claveHash": "2f6fc2b526c97f3fbbbffafb801eecc6:792435b59255aaa59eb52c4790a48cd74c1fd88b4bb0be063c529dca911f2291",
+      "serie": "6f4f008e"
+    },
+    "2026-11-11|b3": {
+      "profesor": "Julio Pereira",
+      "curso": "Contabilidad Avanzada",
+      "nota": "26 Estudiantes",
+      "claveHash": "2f6fc2b526c97f3fbbbffafb801eecc6:792435b59255aaa59eb52c4790a48cd74c1fd88b4bb0be063c529dca911f2291",
+      "serie": "6f4f008e"
+    },
+    "2026-11-18|b3": {
+      "profesor": "Julio Pereira",
+      "curso": "Contabilidad Avanzada",
+      "nota": "26 Estudiantes",
+      "claveHash": "2f6fc2b526c97f3fbbbffafb801eecc6:792435b59255aaa59eb52c4790a48cd74c1fd88b4bb0be063c529dca911f2291",
+      "serie": "6f4f008e"
+    },
+    "2026-11-25|b3": {
+      "profesor": "Julio Pereira",
+      "curso": "Contabilidad Avanzada",
+      "nota": "26 Estudiantes",
+      "claveHash": "2f6fc2b526c97f3fbbbffafb801eecc6:792435b59255aaa59eb52c4790a48cd74c1fd88b4bb0be063c529dca911f2291",
+      "serie": "6f4f008e"
+    },
+    "2026-12-02|b3": {
+      "profesor": "Julio Pereira",
+      "curso": "Contabilidad Avanzada",
+      "nota": "26 Estudiantes",
+      "claveHash": "2f6fc2b526c97f3fbbbffafb801eecc6:792435b59255aaa59eb52c4790a48cd74c1fd88b4bb0be063c529dca911f2291",
+      "serie": "6f4f008e"
+    },
+    "2026-12-09|b3": {
+      "profesor": "Julio Pereira",
+      "curso": "Contabilidad Avanzada",
+      "nota": "26 Estudiantes",
+      "claveHash": "2f6fc2b526c97f3fbbbffafb801eecc6:792435b59255aaa59eb52c4790a48cd74c1fd88b4bb0be063c529dca911f2291",
+      "serie": "6f4f008e"
+    },
+    "2026-10-21|b4": {
+      "profesor": "Julio Pereira",
+      "curso": "Contabilidad avanzada",
+      "nota": "26 Estudiantes",
+      "claveHash": "407cee9866eb630ce412007fe686189d:40b188e3f91be080f90951b2fa42cc2313bf64b1a51a1d74bbaf5c5e8b91275b",
+      "serie": "29b66ef2"
+    },
+    "2026-10-28|b4": {
+      "profesor": "Julio Pereira",
+      "curso": "Contabilidad avanzada",
+      "nota": "26 Estudiantes",
+      "claveHash": "407cee9866eb630ce412007fe686189d:40b188e3f91be080f90951b2fa42cc2313bf64b1a51a1d74bbaf5c5e8b91275b",
+      "serie": "29b66ef2"
+    },
+    "2026-11-04|b4": {
+      "profesor": "Julio Pereira",
+      "curso": "Contabilidad avanzada",
+      "nota": "26 Estudiantes",
+      "claveHash": "407cee9866eb630ce412007fe686189d:40b188e3f91be080f90951b2fa42cc2313bf64b1a51a1d74bbaf5c5e8b91275b",
+      "serie": "29b66ef2"
+    },
+    "2026-11-11|b4": {
+      "profesor": "Julio Pereira",
+      "curso": "Contabilidad avanzada",
+      "nota": "26 Estudiantes",
+      "claveHash": "407cee9866eb630ce412007fe686189d:40b188e3f91be080f90951b2fa42cc2313bf64b1a51a1d74bbaf5c5e8b91275b",
+      "serie": "29b66ef2"
+    },
+    "2026-11-18|b4": {
+      "profesor": "Julio Pereira",
+      "curso": "Contabilidad avanzada",
+      "nota": "26 Estudiantes",
+      "claveHash": "407cee9866eb630ce412007fe686189d:40b188e3f91be080f90951b2fa42cc2313bf64b1a51a1d74bbaf5c5e8b91275b",
+      "serie": "29b66ef2"
+    },
+    "2026-11-25|b4": {
+      "profesor": "Julio Pereira",
+      "curso": "Contabilidad avanzada",
+      "nota": "26 Estudiantes",
+      "claveHash": "407cee9866eb630ce412007fe686189d:40b188e3f91be080f90951b2fa42cc2313bf64b1a51a1d74bbaf5c5e8b91275b",
+      "serie": "29b66ef2"
+    },
+    "2026-12-02|b4": {
+      "profesor": "Julio Pereira",
+      "curso": "Contabilidad avanzada",
+      "nota": "26 Estudiantes",
+      "claveHash": "407cee9866eb630ce412007fe686189d:40b188e3f91be080f90951b2fa42cc2313bf64b1a51a1d74bbaf5c5e8b91275b",
+      "serie": "29b66ef2"
+    },
+    "2026-12-09|b4": {
+      "profesor": "Julio Pereira",
+      "curso": "Contabilidad avanzada",
+      "nota": "26 Estudiantes",
+      "claveHash": "407cee9866eb630ce412007fe686189d:40b188e3f91be080f90951b2fa42cc2313bf64b1a51a1d74bbaf5c5e8b91275b",
+      "serie": "29b66ef2"
     }
   },
-  "enviadas": []
+  "enviadas": [
+    "2026-10-12"
+  ]
 }

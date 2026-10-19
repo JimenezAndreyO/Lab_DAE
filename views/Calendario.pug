@@ -106,6 +106,8 @@ html(lang='es')
       .bloque.pasado { cursor: not-allowed; opacity: 0.55; background: var(--blocked); }
       .bloque.pasado:hover { background: var(--blocked); border-color: var(--line); }
       .bloque.sel.pasado, .bloque.sel.pasado:hover { background: var(--accent); border-color: var(--accent); }
+      label.check { display: flex; align-items: center; gap: 8px; font-weight: 400; }
+      label.check input { display: inline-block; width: auto; margin: 0; }
       .acciones { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
 
   body
@@ -140,6 +142,16 @@ html(lang='es')
         label
           | Nota
           textarea#nota(maxlength='300')
+        label.check#repetir-campo
+          input#repetir(type='checkbox')
+          |  Repetir cada semana (para todo el cuatrimestre)
+        label#hasta-campo(style='display:none')
+          | Repetir hasta
+          input#hasta(type='date')
+          small Se reserva este mismo día y horario cada semana hasta esa fecha (máximo 26 semanas).
+        label.check#serie-campo(style='display:none')
+          input#serie(type='checkbox')
+          |  Aplicar a esta y a todas las semanas siguientes de la serie
         label#clave-campo
           | Clave
           input#clave(type='password', required, minlength='4', maxlength='40', autocomplete='off')
@@ -166,6 +178,12 @@ html(lang='es')
       const API = '/api/reservas';
       // Hora a la que termina cada bloque (24 h); un bloque terminado queda en solo lectura
       const FIN_BLOQUE = { b1: '09:40', b2: '11:40', b3: '14:40', b4: '16:40', b5: '19:40', b6: '21:30' };
+
+      // Suma n días a una fecha "YYYY-MM-DD" y devuelve otra "YYYY-MM-DD"
+      function sumarDiasStr(fecha, n) {
+        const [y, m, d] = fecha.split('-').map(Number);
+        return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
+      }
 
       function esc(s) {
         return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -252,7 +270,7 @@ html(lang='es')
               // Pasado = día anterior a hoy, o bloque de hoy que ya terminó (solo lectura)
               const pasado = fechaStr < hoy || (fechaStr === hoy && FIN_BLOQUE[b.id] <= ahora);
               if (r) {
-                html += `<td class="celda"><button class="bloque sel${pasado ? ' pasado' : ''}"${pasado ? ' disabled' : ` data-clave="${clave}"`} title="${esc(r.curso)} · ${esc(r.profesor)}"><b>${esc(r.curso)}</b><span>${esc(r.profesor)}</span></button></td>`;
+                html += `<td class="celda"><button class="bloque sel${pasado ? ' pasado' : ''}"${pasado ? ' disabled' : ` data-clave="${clave}"`} title="${esc(r.curso)} · ${esc(r.profesor)}"><b>${r.enSerie ? '↻ ' : ''}${esc(r.curso)}</b><span>${esc(r.profesor)}</span></button></td>`;
               } else {
                 html += `<td class="celda"><button class="bloque${pasado ? ' pasado' : ''}"${pasado ? ' disabled aria-label="Día pasado"' : ` data-clave="${clave}" aria-label="Elegir bloque"`}></button></td>`;
               }
@@ -283,6 +301,19 @@ html(lang='es')
         document.getElementById('curso').value = r.curso;
         document.getElementById('nota').value = r.nota || '';
         document.getElementById('clave').value = '';
+
+        // Repetición semanal: solo al crear. Aplicar a la serie: solo al editar/eliminar un bloque en serie.
+        const existente = reservas[clave];
+        const fechaClave = clave.split('|')[0];
+        document.getElementById('repetir-campo').style.display = existente ? 'none' : '';
+        document.getElementById('serie-campo').style.display = existente && existente.enSerie ? '' : 'none';
+        document.getElementById('repetir').checked = false;
+        document.getElementById('serie').checked = false;
+        document.getElementById('hasta-campo').style.display = 'none';
+        document.getElementById('hasta').required = false;
+        document.getElementById('hasta').value = '';
+        document.getElementById('hasta').min = sumarDiasStr(fechaClave, 7);
+        document.getElementById('hasta').max = sumarDiasStr(fechaClave, 182);
         document.getElementById('clave-ayuda').textContent = reservas[clave]
           ? 'Escribe la clave de este bloque para guardar cambios o eliminarlo.'
           : 'Inventa una clave de al menos 4 caracteres. La necesitarás para editar o eliminar este bloque.';
@@ -304,6 +335,8 @@ html(lang='es')
           nota: document.getElementById('nota').value.trim(),
           clave: document.getElementById('clave').value,
         };
+        if (document.getElementById('repetir').checked) datos.repetirHasta = document.getElementById('hasta').value;
+        if (document.getElementById('serie').checked) datos.aplicarSerie = true;
         try {
           const r = await fetch(`${API}/${encodeURIComponent(claveActual)}`, {
             method: 'PUT',
@@ -311,28 +344,39 @@ html(lang='es')
             body: JSON.stringify(datos),
           });
           if (!r.ok) throw new Error((await r.json()).error || 'Error ' + r.status);
-          reservas[claveActual] = await r.json();
+          const resp = await r.json();
+          await cargar();
           modal.close();
           render();
+          if (resp.omitidos && resp.omitidos.length) {
+            alert('Se reservaron ' + resp.creados + ' semanas. Estas fechas se omitieron porque ya estaban ocupadas: ' + resp.omitidos.join(', '));
+          }
         } catch (err) {
           alert('No se pudo guardar: ' + err.message);
         }
       });
 
       document.getElementById('cancelar').onclick = () => modal.close();
+      document.getElementById('repetir').onchange = e => {
+        document.getElementById('hasta-campo').style.display = e.target.checked ? '' : 'none';
+        document.getElementById('hasta').required = e.target.checked;
+      };
       document.getElementById('eliminar').onclick = async () => {
         try {
           const r = await fetch(`${API}/${encodeURIComponent(claveActual)}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ clave: document.getElementById('clave').value }),
+            body: JSON.stringify({
+              clave: document.getElementById('clave').value,
+              aplicarSerie: document.getElementById('serie').checked,
+            }),
           });
           if (!r.ok) {
             let msg = 'Error ' + r.status;
             try { msg = (await r.json()).error || msg; } catch (e) {}
             throw new Error(msg);
           }
-          delete reservas[claveActual];
+          await cargar();
           modal.close();
           render();
         } catch (err) {
