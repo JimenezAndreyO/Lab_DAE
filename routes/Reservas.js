@@ -7,10 +7,8 @@ router.use(express.json());
 
 const CLAVE_BLOQUE = /^(\d{4})-(\d{2})-(\d{2})\|(b[1-6])$/;
 const MIN_CLAVE = 4;
-const MAX_DIAS_SERIE = 182; // máximo 26 semanas de repetición
+const MAX_DIAS_SERIE = 182; /
 
-// Interruptor de claves: false = cualquiera puede editar/eliminar (modo desarrollo),
-// true = hace falta la clave del bloque. Cámbialo y reinicia el servidor.
 const USAR_CLAVES = true;
 
 function claveValida(clave) {
@@ -27,38 +25,35 @@ function limpiar(valor, max) {
   return String(valor ?? '').trim().slice(0, max);
 }
 
-// ---------- Fechas ----------
+
 function fechaIsoValida(s) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
   const dt = new Date(`${s}T00:00:00Z`);
   return !isNaN(dt) && dt.toISOString().slice(0, 10) === s;
 }
 
-// Suma n días a "YYYY-MM-DD" y devuelve otra fecha "YYYY-MM-DD"
+
 function sumarDiasStr(fecha, n) {
   const [y, m, d] = fecha.split('-').map(Number);
   return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
 }
 
-// ---------- Bloques pasados (bloqueados) ----------
-// Hora a la que termina cada bloque (24 h, hora de Costa Rica)
+
 const FIN_BLOQUE = { b1: '09:40', b2: '11:40', b3: '14:40', b4: '16:40', b5: '19:40', b6: '21:30' };
 
 const MENSAJE_PASADO = 'No se pueden agregar, editar ni eliminar bloques que ya pasaron.';
 
-// Un bloque ya pasó si su día es anterior a hoy, o si es hoy y ya terminó.
-// Hora de Costa Rica = UTC-6 (sin horario de verano).
+
 function esBloquePasado(clave) {
   const [fecha, id] = String(clave).split('|');
-  const ahora = new Date(Date.now() - 6 * 3600 * 1000).toISOString(); // "YYYY-MM-DDTHH:MM:..."
+  const ahora = new Date(Date.now() - 6 * 3600 * 1000).toISOString(); 
   const hoy = ahora.slice(0, 10);
   const hora = ahora.slice(11, 16);
   if (fecha < hoy) return true;
   return fecha === hoy && Boolean(FIN_BLOQUE[id]) && FIN_BLOQUE[id] <= hora;
 }
 
-// ---------- Series (bloques que se repiten cada semana) ----------
-// Bloques de una serie desde una fecha en adelante (sin contar los que ya pasaron)
+
 function clavesDeSerie(data, serie, desdeClave) {
   const desde = desdeClave.slice(0, 10);
   return Object.keys(data.reservas).filter(
@@ -66,7 +61,7 @@ function clavesDeSerie(data, serie, desdeClave) {
   );
 }
 
-// ---------- Claves (se guardan cifradas, nunca en texto plano) ----------
+
 function hacerHash(clave) {
   const salt = crypto.randomBytes(16).toString('hex');
   const hash = crypto.scryptSync(clave, salt, 32).toString('hex');
@@ -81,7 +76,6 @@ function comprobar(clave, guardado) {
   return esperado.length === calculado.length && crypto.timingSafeEqual(calculado, esperado);
 }
 
-// Clave maestra opcional (ADMIN_CLAVE en el .env) para resolver conflictos o claves olvidadas
 function esAdmin(clave) {
   const admin = process.env.ADMIN_CLAVE;
   if (!admin) return false;
@@ -90,7 +84,6 @@ function esAdmin(clave) {
   return crypto.timingSafeEqual(a, b);
 }
 
-// ---------- Límite de intentos fallidos (en memoria) ----------
 const fallos = new Map();
 const MAX_FALLOS = 5;
 const VENTANA_MS = 5 * 60 * 1000;
@@ -107,8 +100,7 @@ function registrarFallo(k) {
   else f.n++;
 }
 
-// Devuelve true si se puede continuar; si no, ya respondió al cliente.
-// Los bloques sin clave (antiguos o inexistentes) se pueden modificar libremente.
+
 function autorizar(req, res, reserva) {
   if (!USAR_CLAVES || !reserva || !reserva.claveHash) return true;
 
@@ -126,14 +118,12 @@ function autorizar(req, res, reserva) {
   return false;
 }
 
-// Nunca se envían claves, IP ni el id interno de la serie al navegador
+
 function publica(reserva) {
   const { claveHash, ip, serie, ...resto } = reserva;
   return { ...resto, enSerie: Boolean(serie) };
 }
 
-// ---------- Rutas ----------
-// La vista consulta esto para saber si debe mostrar el campo de clave
 router.get('/config', (req, res) => {
   res.json({ claves: USAR_CLAVES });
 });
@@ -145,9 +135,7 @@ router.get('/', (req, res) => {
   res.json(salida);
 });
 
-// Crear o editar un bloque.
-// - Nuevo: con "repetirHasta" (YYYY-MM-DD) se reserva el mismo horario cada semana hasta esa fecha.
-// - Existente: con "aplicarSerie" se edita esta semana y todas las siguientes de su serie.
+
 router.put('/:clave', (req, res) => {
   const clave = req.params.clave;
   if (!claveValida(clave)) return res.status(400).json({ error: 'Bloque inválido' });
@@ -174,7 +162,6 @@ router.put('/:clave', (req, res) => {
     claveHash = hacerHash(nueva);
   }
 
-  // --- Editar un bloque que ya existe ---
   if (existente) {
     const objetivos = body.aplicarSerie && existente.serie
       ? clavesDeSerie(data, existente.serie, clave)
@@ -186,7 +173,6 @@ router.put('/:clave', (req, res) => {
     return res.json({ ...publica(data.reservas[clave]), actualizados: objetivos.length });
   }
 
-  // --- Crear un bloque nuevo (con repetición semanal opcional) ---
   const [fecha, id] = clave.split('|');
   const claves = [clave];
   const hasta = limpiar(body.repetirHasta, 10);
